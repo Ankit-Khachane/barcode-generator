@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Barcode Carousel</title>
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <style>
         body {
             text-align: center; /* Center align the contents in the body */
@@ -34,7 +34,7 @@
     </div>
     <div class="carousel">
         <button id="prev" onclick="navigate(-1)">Previous</button>
-        <svg class="barcode" id="barcodeContainer"></svg>
+        <svg class="barcode" id="barcodeContainer" style="width: fit-content; height: fit-content;"></svg>
         <button id="next" onclick="navigate(1)">Next</button>
     </div>
     <button id="startButton" onclick="toggleAutoNavigation()">Start</button>
