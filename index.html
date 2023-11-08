@@ -2,8 +2,12 @@
 <html>
 <head>
     <title>Barcode Carousel</title>
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
     <style>
+        body {
+            text-align: center; /* Center align the contents in the body */
+        }
+
         .carousel {
             display: flex;
             justify-content: space-between;
@@ -14,6 +18,10 @@
 
         .barcode {
             display: inline-block;
+        }
+
+        #counter {
+            font-size: 1.2em;
         }
     </style>
 </head>
@@ -26,21 +34,33 @@
     </div>
     <div class="carousel">
         <button id="prev" onclick="navigate(-1)">Previous</button>
-        <svg  class="barcode" id="barcodeContainer" style="width: fit-content; height: fit-content;"></svg>
+        <svg class="barcode" id="barcodeContainer"></svg>
         <button id="next" onclick="navigate(1)">Next</button>
     </div>
+    <button id="startButton" onclick="toggleAutoNavigation()">Start</button>
+    <span id="counter">Barcode: 0</span>
+    <button id="resetButton" onclick="resetCarousel()">Reset</button>
 
     <script>
         const barcodeDataInput = document.getElementById("barcodeData");
         const barcodeContainer = document.getElementById("barcodeContainer");
         const prevButton = document.getElementById("prev");
         const nextButton = document.getElementById("next");
+        const startButton = document.getElementById("startButton");
+        const resetButton = document.getElementById("resetButton");
+        const counterText = document.getElementById("counter");
         const barcodes = [];
         let currentIndex = 0;
+        let autoNavigationInterval;
+        let isAutoNavigationRunning = false;
 
         function generateBarcode(text) {
             barcodeContainer.innerHTML = "";
             JsBarcode(barcodeContainer, text, { format: "CODE128" });
+        }
+
+        function updateCounterText() {
+            counterText.textContent = `Barcode: ${currentIndex + 1} of ${barcodes.length}`;
         }
 
         function generateBarcodes() {
@@ -58,6 +78,7 @@
             currentIndex = 0;
             if (barcodes.length > 0) {
                 generateBarcode(barcodes[currentIndex].text);
+                updateCounterText();
             }
         }
 
@@ -71,6 +92,34 @@
             }
 
             generateBarcode(barcodes[currentIndex].text);
+            updateCounterText();
+        }
+
+        function toggleAutoNavigation() {
+            if (barcodes.length > 1) {
+                isAutoNavigationRunning = !isAutoNavigationRunning;
+                if (isAutoNavigationRunning) {
+                    startButton.textContent = "Stop";
+                    autoNavigationInterval = setInterval(() => {
+                        if (currentIndex < barcodes.length - 1) {
+                            navigate(1);
+                        } else {
+                            clearInterval(autoNavigationInterval);
+                            isAutoNavigationRunning = false;
+                            startButton.textContent = "Start";
+                        }
+                    }, 200);
+                } else {
+                    clearInterval(autoNavigationInterval);
+                    startButton.textContent = "Start";
+                }
+            }
+        }
+
+        function resetCarousel() {
+            currentIndex = 0;
+            generateBarcode(barcodes[currentIndex].text);
+            updateCounterText();
         }
 
         // Keyboard navigation
